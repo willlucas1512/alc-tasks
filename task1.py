@@ -231,21 +231,21 @@ B=[1,2,1]
 j = GaussSeidel(A,B,3,c)
 d = Jacobi(A,B,3,c)
 print("Utilizando o arquivo de entrada:")
-method = int(input("Escolha o metodo de solucao: \n1 - Decomposicao LU \n3 - Decomposicao de Cholesky \n3 - Jacobi \n4 - Gauss-Seidel \n"))
+ICOD = int(input("Escolha o metodo de solucao: \n1 - Decomposicao LU \n3 - Decomposicao de Cholesky \n3 - Jacobi \n4 - Gauss-Seidel \n"))
 calcdeterminant = int(input("Deseja calcular o determinante? \n1 - Sim \n2 - Nao \n"))
-if method == 1:
+if ICOD == 1:
     print("Decomposicao LU \n", sistLU(A,B,3))
     if calcdeterminant == 1:
         print("Determinante: ", determLU(A,3))
-# elif method == '2':
+# elif ICOD == '2':
 #     print("Decomposicao de Cholesky \n", sistCholesky(A,B,3))
 #     if calcdeterminant == '1':
 #         print("Metodo iterativo. Nao e possivel calcular o determinante.")
-# elif method == '3':
+# elif ICOD == '3':
 #     print("Jacobi \n", Jacobi(A,B,3,c))
 #     if calcdeterminant == '1':
 #          print("Metodo iterativo. Nao e possivel calcular o determinante.")
-# elif method == '4':
+# elif ICOD == '4':
 #     print("Gauss-Seidel \n", GaussSeidel(A,B,3,c))
 #     if calcdeterminant == '1':
 #          print("Metodo iterativo. Nao e possivel calcular o determinante.")
