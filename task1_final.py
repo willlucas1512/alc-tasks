@@ -58,10 +58,10 @@ def sistLU(A,B,n):
 
 def detLU(A,n):
 
-    s = 0
+    p = 1
     for i in range(n):
         
-        s = s + A[i][i]
+        p*= A[i][i]
         
     return s
 
@@ -152,10 +152,10 @@ def sistCholesky(A,B,n):
 #calcula o determinante da matriz A, de ordem n, decomposta por cholesky
 
 def detCholesky(A,n):
-    s = 0
+    p = 1
     for i in range(n):
-        s+= A[i][i]
-    return s**2
+        p*= A[i][i]
+    return p**2
 
 
 #faz a norma euclidiana do vetor x 
