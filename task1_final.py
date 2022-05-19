@@ -30,13 +30,14 @@ def sistLU(A,B,n):
     i = 1
     
     while i < n:
+                   
         k = 0
         s = 0
         while k < i:
             s+= B[k] * A[i][k]
             k+=1
             
-        B[i] = B[i]-s
+        B[i] = B[i]- s
         i+=1
     B[n-1] = B[n-1]/A[n-1][n-1]
     i = n-2
@@ -61,6 +62,7 @@ def detLU(A,n):
     for i in range(n):
         
         s = s + A[i][i]
+        
     return s
 
 
@@ -155,10 +157,7 @@ def detCholesky(A,n):
         s+= A[i][i]
     return s**2
 
-'''
-B = [.6,-.3,-.6]
-sistCholesky(A, B, 3)
-'''
+
 #faz a norma euclidiana do vetor x 
 
 
@@ -249,7 +248,7 @@ def Jacobi(A, B, n, x, tol):
         else:
             it+=1
 
-            historico.append(round((norma(x0)/norma(x)),5))
+           
 
 
 #Resolve o sistema Ax=B pelo método iterativo de GaussSeidel
@@ -458,3 +457,5 @@ input()
 exit()
     
 
+
+         
