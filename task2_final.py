@@ -1,306 +1,461 @@
-from math import pi
-from math import atan
-from math import sin
-from math import cos
 
 
-#calcula um auto valor e seu correspondente auto vetor pelo método das potências
+#decompõe a matriz A de orndem n em uma matriz LU
 
-
-
-
-def Potencia(A,v,n):
-    L0 = 1
-    it = 1
-    while True:
+def decompLU(A,n):
+    j = 0
+    while j < n:
+        i = j+1
+        while i < n:
+            A[i][j] = round((A[i][j] / A[j][j]), 4)
+            p = j+1
+            while p < n:
+                A[i][p] = round((A[i][p] -(A[i][j] * A[j][p])),4)
+                p+= 1
+            i+= 1
+        j+=1
         
-        for i in range(n):
-            s=0
-            for j in range(n):
-                s+= A[i][j]*v[j]
-            v[i] = s
+    return A
+    
         
-        L = v[0]
-        for i in range(n):
-            v[i]= v[i]/v[0]
-        if ((abs(L - L0))/abs(L)) < tol:
-            return L, v, it
-        else:
-            L0 = L
-            it+= 1
 
-#-------------------------------------------------------------------
 
-#cria uma matriz identidade de ordem n
 
+#resolve o sistema linear de ordem n Ax=B, usando decomposição LU
+
+def sistLU(A,B,n):
+    
+    A = decompLU(A,n)
+    
+    i = 1
+    
+    while i < n:
+        k = 0
+        s = 0
+        while k < i:
+            s+= B[k] * A[i][k]
+            k+=1
             
-def Identidade(n):
-    A=[]
-    for i in range(n):
-        B=[]
-        for j in range(n):
-            if i == j:
-                B.append(1)
-            else:
-                B.append(0)
+        B[i] = B[i]-s
+        i+=1
+    B[n-1] = B[n-1]/A[n-1][n-1]
+    i = n-2
+    while i >= 0:
+        s = 0
+        k = n-1
+        while k > i:
+            s+= A[i][k] * B[k]
+            k-= 1
+        B[i] = (B[i] - s) / A[i][i]
+        i-=1
+    return B
 
-        A.append(B)
+
+
+#calcula o determinante da matriz A decomposta em LU
+
+
+def detLU(A,n):
+
+    s = 0
+    for i in range(n):
+        
+        s = s + A[i][i]
+    return s
+
+
+
+
+#faz a decomposição de Cholesky na matriz A
+
+def Cholesky(A,n):
+    i = 1
+    
+    while i < n:
+        j=0
+        
+        while j<i:
+            
+            if A[i][j] != A[j][i]:
+                return "A não é simétrica, insira uma matriz válida"
+            j+=1
+        i+=1
+        
+    i = 0
+    
+    while i < n:
+        k=0
+        s=0
+        
+        while k < i:
+            s+= (A[i][k])**2
+            k+=1
+            
+        if (A[i][i]-s) <= 0:
+            print("A não é semi-definida positiva, insira uma matriz válida")
+            return
+        
+        A[i][i] = ((A[i][i]-s)**(.5))
+        
+        
+        j = i+1
+        
+        while j < n:
+            l = 0
+            s = 0
+            
+            while l < i:
+                s+=A[i][l]*A[j][l]
+                l+=1
+            A[j][i]=((A[i][j]-s)/A[i][i])
+            j+=1
+        i+=1
+        
+        
     return A
 
 
-#-------------------------------------------------------------------
+#Resolve o sistem Ax=B, sendo A uma matriz que sofreu a decomposição de Cholesky
 
 
-#multiplica matriz A por B
+def sistCholesky(A,B,n):
 
-
-def MultMatriz(A,B):
+    A = Cholesky(A,n)
     
-    if len(A[0]) != len(B):
-        print('matrizes incompativeis')
-        return
-            
-    M=[]
-    
-    for L in A:
-        linha = []
-        i = 0
-        
-        while i < len(L):
-            s = 0
-            j = 0
-            
-            while j < len(B):
-                s+= L[j] * B[j][i]
-                j+=1
-            i+=1
-            linha.append(round(s,5))
-        M.append(linha)
-        
-    
-        
-    return M
-
-#-------------------------------------------------------------------
-
-
-
-
-
-#retorna a transposta da matriz A
-
-def Transposta(A):
-    M = []
-    j = 0
-    while j < len(A[0]):
-        
-        linha = []
-        i = 0
-        while i < len(A):
-            linha.append(A[i][j])
-            i+=1
-        j+=1
-        M.append(linha)
-    return M
-            
-#-------------------------------------------------------------------
-
-
-#calcula auto valores e auto vetores de uma matriz A simétrica
-
-def Jacobi(A,n,tol):
-
-    
-
-    
-    
-    x = Identidade(n)
-    it = 1
-
-    k = True
-
-    i = 0
+    i = 1
+    B[0] = B[0]/A[0][0]
     while i < n:
-        j = 0
-        while j < n:
-            if A[i][j] != A[j][i]:
-                print('Matriz não é simétrica')
-                return
-            j+=1
+        k = 0
+        s = 0
+        while k < i:
+            s+= B[k] * A[i][k]
+            k+=1
+            
+        B[i] = (B[i]-s)/A[i][i]
         i+=1
+    
+    B[n-1] = B[n-1]/A[n-1][n-1]
+    i = n-2
+    while i >= 0:
+        s = 0
+        k = n-1
+        while k > i:
+            s+= A[i][k] * B[k]
+            k-= 1
+        B[i] = (B[i] - s) / A[i][i]
+        i-=1
+    
+    return B
 
+#calcula o determinante da matriz A, de ordem n, decomposta por cholesky
+
+def detCholesky(A,n):
+    s = 0
+    for i in range(n):
+        s+= A[i][i]
+    return s**2
+
+'''
+B = [.6,-.3,-.6]
+sistCholesky(A, B, 3)
+'''
+#faz a norma euclidiana do vetor x 
+
+
+def norma(x):
+    
+    s=0
+    for i in range(len(x)):
+        s+= (x[i]**2)
+        
+    return ((s)**(.5))
+
+
+
+
+#resolve o sistema pelo metodo de jacobi
+
+
+
+
+def Jacobi(A, B, n, x, tol):
     
     
+
+    it = 1
+    historico = []
     while True:
         
-        
-        c = abs(A[0][1])
-        ind = [0,1]
-        
-        
-        for i in range(n):
-            for j in range(n):
-                
-                if (abs(A[i][j]) > c):
-                    if (i != j) :
-                    
-                      
-                        c = abs(A[i][j])
-                        ind[0] = i
-                        ind[1] = j
-        
-        p= ind[0]
-        q= ind[1]
-        if A[p][p]==A[q][q]:
-            T = pi/4
-        else:
-            T = (atan(2*A[p][q]/(A[p][p] - A[q][q])))/2
-
-        P = Identidade(n)
-        
-            
-        P[p][p]=cos(T)
-        P[p][q]=-sin(T)
-        P[q][p]=sin(T)
-        P[q][q]=cos(T)
-
-        
-
-        A = MultMatriz(Transposta(P), MultMatriz(A,P))
-        x = MultMatriz(x, P)
-
-        a = 0
-
-        for i in range(n):
-            for j in range(n):
-                if i != j and abs(A[i][j]) < tol:
-                    a+= 1
-                
-        if a == (n*(n-1)):
-            
-            for i in A:
-                print(i)
-            for i in x:
-                print(i)
-
-                
-            
-                
-            
-            
-            return it
-        else:
-            it+= 1
-
-
-
-#----------------------------------------------------------------------------------
-            
-            
-def DetermJacobi(A,n):
-    det = A[0][0]
-    i=1
-    while i<n:
-        det*= A[i][i]
     
-    return det
+    
+        i = 0
+        while i < n:
+            j = 0
+            s1=0
+            s2=0
+            while j < n:
+                if i != j:
+                    s1+= abs(A[i][j])
+                    s2+= abs(A[j][i])
+                    j+=1
+                    
+                else:
+                    j+=1
+                    
+            if (s1 or s2) > A[i][i]:
+                return 'A matriz A não é diagonal dominante. Insira uma matriz válida'
+                    
+            i+=1
+        
+        
+        x0 = []
+        
+        for i in x:
+            x0.append(i)
+        
+            
+        
+        i = 0
+        while i < n:
+            
+            j = 0
+            s = 0
+            while j < n:
+                 if j != i:
+                     s+= A[i][j]*x0[j]
+                     j+=1
+                 else:
+                        j+=1
+            
+            x[i] = round(((B[i] - s)/A[i][i]),5)
+        
+            i+=1
+        
+        
+        
+        for i in range(n):
+            x0[i]-= x[i]
 
-#-------------------------------------------------------------------
+        i = norma(x0)/norma(x)
+        
+        
+        historico.append(round(i,4))
+        
+        
+        if (norma(x0)/norma(x)) <= tol:            
+            
+            return [it, x, historico]
+
+        else:
+            it+=1
+
+            historico.append(round((norma(x0)/norma(x)),5))
+
+
+#Resolve o sistema Ax=B pelo método iterativo de GaussSeidel
+
+
+
+def GaussSeidel(A,B,n,x,tol):
+    
+
+
+    it = 1
+    historico = []
+    while True:
+        
+        i=0
+        while i < n:
+            
+            j=i+1
+            s1=0
+            s2=0
+            while j < n:
+                
+                if i != j:
+                    
+                    s1+=abs(A[i][j])
+                    s2+=abs(A[j][i])
+                    j+=1
+                else:
+                    
+                    j+=1
+            if (s1 or s2) > A[i][i]:
+                
+                print('A matriz A não é diagonal dominante. Insira uma matriz válida')
+                return
+            i+=1        
+
+        
+        
+        x0 = []
+        
+        for i in x:
+            
+            x0.append(i)
+            
+        i = 0
+        
+        
+        while i < n:
+            
+            j = 0
+            s = 0
+            while j < n:
+                
+                if j != i:
+                     
+                     s+= A[i][j]*x[j]
+                     j+=1
+                else:
+                     
+                    j+=1
+            
+            x[i] = round(((B[i] - s)/A[i][i]),5)
+            i+=1
+        
+        
+        for i in range(n):
+            
+            x0[i]-= x[i]
+        
+        i = norma(x0)/norma(x)
+        historico.append(round(i,3))
+        
+        
+        if (i) <= tol:
+            
+            return [it, x, historico]
+        else:
+            
+            it+=1
+            
+            
+
+           
+
 
 M = []
-arq = open('Matriz.dat')
-for linha in arq:
-    a = []
-    for i in linha.split():
-        a.append(float(i))
-    M.append(a)
-arq.close()
-
-#pergunta ao usuário o que ele deseja
-                 
-k = True
-while k:
-    ICOD = input('insira ICOD')
-    if ICOD not in ['1','2']:
-        print('insira ICOD válido')
-    else:
-        ICOD = int(ICOD)
-        k = False
-
-        
-k = True
-while k:
-    IDET = input('deseja calcular determinante? 0 se não, 1 se sim\n')
-    if IDET not in ['0','1']:
-        print('IDET inválido')
-    else:
-        IDET = int(IDET)
-        k=False
-
-
-
-
-if IDET == 1 and ICOD != 2:
-    print('comando inválido, impossivel proceder')
-    input('aperte qualquer tecla para fechar e abra novamente\n')
-    exit()
-
-
-#pergunta a ordem do sistema de equações
-
+with open('mat.dat','r') as arq:
     
-N = input('informe a ordem do sistema\n')
-N = int(N)
+    for linha in arq:
+        a = []
+        for i in linha.split():
+            a.append(float(i))
+        M.append(a)
 
-#pergunta se o usuário quer usar uma tolerancia específica, ou a padrão(10^-3)
-
-k = True
-tol = 10**-3
-while k:
-
-    if ICOD == 2:
-        tol = input('deseja especificar tolerancia? padrão = 10^-3 - s/n\n')
-        if tol not in ['s','n']:
-            print('resposta inválida')
-        else:
-            tol = float(input('valor:\n'))
-            k = False
-
-
-
-
-
-#pergunta se o usuário quer usar uma um vetor inicial específico, ou o padrão
-
-k = True
 
 x = []
 
-while k:
-    if ICOD == 2:
-        x = input('deseja informar vetor inicial? padrão é vetor unitário - s/n\n')
-        if x not in ['s','n']:
-            print('insira resposta válida\n')
-        else:
-            x_=[]
-            x = open('chute_inicial.dat')
-            for i in x:
-                x_.append(float(i))
-            x = x_
-            del x_
-                
-                
-            k = False
+
+with open('input.txt','r') as arquivo:
+    L = []
+    for i in arquivo:
+        L.append(i)
+    N = int(L[0])
+    ICOD = int(L[1])
+    IDET = int(L[2])
+    tol = float(L[3].split()[0])
+    if L[4] == 's':
+        
+        with open('chute.dat') as ch:
+            for i in ch:
+                x.append(float(i))
 
 
-if len(x)==0:
-    for i in range(N):
-        x.append(1)
         
 
+if (ICOD not in [1,2,3,4]) or (IDET not in [0,1]):
+    with open('output.txt','w') as out:
+        out.write('arquivo inválido. vise-o e tente novamente')
+        
+    input()
+    exit()
+
+
+if IDET == 1 and ICOD not in [1,2]:
+    with open('output.txt','w') as out:
+        out.write('não é possível calcular determinante. arrume o arquivo e tente novamente')
+        
+    input()
+    exit()
+
+#executa os métodos
+        
 if ICOD == 1:
-    print(Potencia(M, x, N))
+    
+    if IDET == 1:
+        D = detLU(M,N)        
+        with open('output.txt','w') as out:
+            out.write('DETERMINANTE: '+ str(D) + '\n\n\n')
+            M = sistLU(M,V,N)
+            for elem in M:
+                out.write(str(elem)+'\n')
+    else:               
+        with open('output.txt','w') as out:
+
+            
+            M = sistLU(M,V,N)
+            for elem in M:
+                out.write(str(elem)+'\n')
+            
+    
+    
+
+        
+
+elif ICOD == 2:
+
+    if IDET == 1:
+        with open('DET.txt','w') as det:
+            det.write('DETERMINANTE:  '+str(D))
+        D = detCholesky(M,N)
+        M = sistCholesky(M,V,N)
+        with open('output.txt','w') as out:
+            for elem in M:
+                out.write(str(elem)+'\n')
+            
+        
+    else:
+            
+        M = sistCholesky(M,V,N)
+        with open('output.txt','w') as out:
+            for elem in M:
+                out.write(str(elem)+'\n')
+           
+    
+            
+elif ICOD == 3:#[it, x, historico]
+    
+    M = Jacobi(M, V, N, x, tol)
+
+    if type(M)==str:
+       with open('output.txt','w') as out:
+           out.write((M))
+    else:
+        with open('output.txt','w') as out:
+            for elem in M[1]:
+                out.write(str(elem)+'\n')
+            out.write('Nº de iterações: '+str(M[0]))
+            out.write('\nhistórico: '+str(M[2]))
 
 else:
-    print(Jacobi(M, N, tol))
+    M = GaussSeidel(M, V, N, x, tol)
+    if type(M)==str:
+       with open('output.txt','w') as out:
+           out.write((M))
+    else:
+        with open('output.txt','w') as out:
+            for elem in M[1]:
+                out.write(str(elem)+'n')
+            out.write('Nº de iterações: '+str(M[0]))
+            out.write('histórico: '+str(M[2]))
+    
+
+
+input()
+
+exit()
+    
+
 
