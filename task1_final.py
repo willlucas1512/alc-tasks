@@ -1,6 +1,6 @@
 
 
-#decompõe a matriz A de orndem n em uma matriz LU
+#decompoe a matriz A de orndem n em uma matriz LU
 
 def decompLU(A,n):
     j = 0
@@ -21,7 +21,7 @@ def decompLU(A,n):
 
 
 
-#resolve o sistema linear de ordem n Ax=B, usando decomposição LU
+#resolve o sistema linear de ordem n Ax=B, usando decomposicao LU
 
 def sistLU(A,B,n):
     
@@ -63,12 +63,12 @@ def detLU(A,n):
         
         p*= A[i][i]
         
-    return s
+    return p
 
 
 
 
-#faz a decomposição de Cholesky na matriz A
+#faz a decomposicao de Cholesky na matriz A
 
 def Cholesky(A,n):
     i = 1
@@ -79,7 +79,7 @@ def Cholesky(A,n):
         while j<i:
             
             if A[i][j] != A[j][i]:
-                return "A não é simétrica, insira uma matriz válida"
+                return "A nao eh simetrica, insira uma matriz valida"
             j+=1
         i+=1
         
@@ -94,7 +94,7 @@ def Cholesky(A,n):
             k+=1
             
         if (A[i][i]-s) <= 0:
-            print("A não é semi-definida positiva, insira uma matriz válida")
+            print("A nao eh semi-definida positiva, insira uma matriz valida")
             return
         
         A[i][i] = ((A[i][i]-s)**(.5))
@@ -117,7 +117,7 @@ def Cholesky(A,n):
     return A
 
 
-#Resolve o sistem Ax=B, sendo A uma matriz que sofreu a decomposição de Cholesky
+#Resolve o sistem Ax=B, sendo A uma matriz que sofreu a decomposicao de Cholesky
 
 
 def sistCholesky(A,B,n):
@@ -178,6 +178,9 @@ def norma(x):
 
 
 def Jacobi(A, B, n, x, tol):
+
+    for i in range(n):
+        x.append(1)
     
     
 
@@ -200,9 +203,6 @@ def Jacobi(A, B, n, x, tol):
                     
                 else:
                     j+=1
-                    
-            if (s1 or s2) > A[i][i]:
-                return 'A matriz A não é diagonal dominante. Insira uma matriz válida'
                     
             i+=1
         
@@ -238,7 +238,7 @@ def Jacobi(A, B, n, x, tol):
         i = norma(x0)/norma(x)
         
         
-        historico.append(round(i,4))
+        historico.append(round(i,5))
         
         
         if (norma(x0)/norma(x)) <= tol:            
@@ -251,11 +251,14 @@ def Jacobi(A, B, n, x, tol):
            
 
 
-#Resolve o sistema Ax=B pelo método iterativo de GaussSeidel
+#Resolve o sistema Ax=B pelo metodo iterativo de GaussSeidel
 
 
 
 def GaussSeidel(A,B,n,x,tol):
+
+    for i in range(n):
+        x.append(1)
     
 
 
@@ -263,27 +266,7 @@ def GaussSeidel(A,B,n,x,tol):
     historico = []
     while True:
         
-        i=0
-        while i < n:
-            
-            j=i+1
-            s1=0
-            s2=0
-            while j < n:
-                
-                if i != j:
-                    
-                    s1+=abs(A[i][j])
-                    s2+=abs(A[j][i])
-                    j+=1
-                else:
-                    
-                    j+=1
-            if (s1 or s2) > A[i][i]:
-                
-                print('A matriz A não é diagonal dominante. Insira uma matriz válida')
-                return
-            i+=1        
+        
 
         
         
@@ -319,7 +302,7 @@ def GaussSeidel(A,B,n,x,tol):
             x0[i]-= x[i]
         
         i = norma(x0)/norma(x)
-        historico.append(round(i,3))
+        historico.append(round(i,5))
         
         
         if (i) <= tol:
@@ -335,13 +318,18 @@ def GaussSeidel(A,B,n,x,tol):
 
 
 M = []
-with open('mat.dat','r') as arq:
+with open('mat_A_04.dat','r') as arq:
     
     for linha in arq:
         a = []
         for i in linha.split():
             a.append(float(i))
         M.append(a)
+
+V=[]
+with open('vet_B_02.dat')as vet:
+    for i in vet:
+        V.append(float(i))
 
 
 x = []
@@ -366,7 +354,7 @@ with open('input.txt','r') as arquivo:
 
 if (ICOD not in [1,2,3,4]) or (IDET not in [0,1]):
     with open('output.txt','w') as out:
-        out.write('arquivo inválido. vise-o e tente novamente')
+        out.write('arquivo invalido. vise-o e tente novamente')
         
     input()
     exit()
@@ -374,12 +362,12 @@ if (ICOD not in [1,2,3,4]) or (IDET not in [0,1]):
 
 if IDET == 1 and ICOD not in [1,2]:
     with open('output.txt','w') as out:
-        out.write('não é possível calcular determinante. arrume o arquivo e tente novamente')
+        out.write('nao eh possivel calcular determinante. arrume o arquivo e tente novamente')
         
     input()
     exit()
 
-#executa os métodos
+#executa os metodos
         
 if ICOD == 1:
     
@@ -405,12 +393,12 @@ if ICOD == 1:
 
 elif ICOD == 2:
 
-    if IDET == 1:
-        with open('DET.txt','w') as det:
-            det.write('DETERMINANTE:  '+str(D))
-        D = detCholesky(M,N)
-        M = sistCholesky(M,V,N)
+    if IDET == 1:      
         with open('output.txt','w') as out:
+            D = detCholesky(M,N) 
+            M = sistCholesky(M,V,N)
+                
+            out.write(' DETERMINANTE:  '+str(D) + '\n')
             for elem in M:
                 out.write(str(elem)+'\n')
             
@@ -435,8 +423,8 @@ elif ICOD == 3:#[it, x, historico]
         with open('output.txt','w') as out:
             for elem in M[1]:
                 out.write(str(elem)+'\n')
-            out.write('Nº de iterações: '+str(M[0]))
-            out.write('\nhistórico: '+str(M[2]))
+            out.write('No de iteracoes: '+str(M[0]))
+            out.write('\nhistorico: '+str(M[2]))
 
 else:
     M = GaussSeidel(M, V, N, x, tol)
@@ -446,9 +434,9 @@ else:
     else:
         with open('output.txt','w') as out:
             for elem in M[1]:
-                out.write(str(elem)+'n')
-            out.write('Nº de iterações: '+str(M[0]))
-            out.write('histórico: '+str(M[2]))
+                out.write(str(elem)+'\n')
+            out.write('No de iteracoes: '+str(M[0])+'\n')
+            out.write('historico: '+str(M[2])+'\n')
     
 
 

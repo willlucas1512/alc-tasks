@@ -2,9 +2,10 @@ from math import pi
 from math import atan
 from math import sin
 from math import cos
+import numpy as np
 
 
-#calcula um auto valor e seu correspondente auto vetor pelo método das potências
+#calcula um auto valor e seu correspondente auto vetor pelo metodo das potencias
 
 
 
@@ -119,7 +120,7 @@ def Transposta(A):
 #-------------------------------------------------------------------
 
 
-#calcula auto valores e auto vetores de uma matriz A simétrica
+#calcula auto valores e auto vetores de uma matriz A simetrica
 
 def Jacobi(A,n,tol):
 
@@ -137,7 +138,7 @@ def Jacobi(A,n,tol):
         j = 0
         while j < n:
             if A[i][j] != A[j][i]:
-                print('Matriz não é simétrica')
+                print('Matriz nao eh simetrica')
                 return
             j+=1
         i+=1
@@ -177,10 +178,11 @@ def Jacobi(A,n,tol):
         P[q][p]=sin(T)
         P[q][q]=cos(T)
 
-        
-
-        A = MultMatriz(Transposta(P), MultMatriz(A,P))
-        x = MultMatriz(x, P)
+        b = Transposta(P)
+        A = np.dot(b, np.dot(A,P))
+        # A = MultMatriz(Transposta(P), MultMatriz(A,P))
+        x = np.dot(x,P)
+        # x = MultMatriz(x, P)
 
         a = 0
 
@@ -205,13 +207,13 @@ def DetermJacobi(A,n):
     i=1
     while i<n:
         det*= A[i][i]
-    
+        i+=1
     return det
 
 #-------------------------------------------------------------------
 
 M = []
-with open('mat.dat')as arq:
+with open('mat_A_04.dat')as arq:
     for linha in arq:
         a = []
         for i in linha.split():
@@ -220,7 +222,7 @@ with open('mat.dat')as arq:
 
 v = []
 
-with open('input.dat') as arq:
+with open('input.txt') as arq:
     l=[]
     for i in arq:
         l.append(i)
@@ -235,59 +237,60 @@ with open('input.dat') as arq:
                 v.append(float(i))
     if IDET == 1 and ICOD != 2 or l[4] not in ['s','n']:
         with open('output.txt','w') as out:
-            out.write('arquivo de input inválido. tente novamente')
+            out.write('arquivo de input invalido. tente novamente')
             input()
             exit()
-#pergunta ao usuário o que ele deseja
+#pergunta ao usuario o que ele deseja
 
 
         
 
-if ICOD == 1:
-    M = Potencia(M, v, N)
-    with open('output.txt','w') as fora:
-        fora.write('autovalor encontrado: ' + str(M[0]) + '\n\n\n')
-        fora.write('número de iterações: ' + str(M[2]) + '\n\n\n')
-        fora.write('auto vetor correspondente: \n\n\n')
-        for i in M[1]:
-            fora.write(str(i)+'\n')
+# if ICOD == 1:
+#     print("seila")
+#     M = Potencia(M, v, N)
+#     with open('output.txt','w') as fora:
+#         fora.write('autovalor encontrado: ' + str(M[0]) + '\n\n\n')
+#         fora.write('numero de iteracoes: ' + str(M[2]) + '\n\n\n')
+#         fora.write('auto vetor correspondente: \n\n\n')
+#         for i in M[1]:
+#             fora.write(str(i)+'\n')
         
         
     
 
-else:
-    M = Jacobi(M,N,tol)
-    if IDET == 1:
-        
-        D = determJacobi(M[1],N)
-        with open('output_1.txt','w') as fora:
-            fora.write('Determinante: ' + str(D) + '\n\n\n\n')
-            fora.write('MATRIZ DOS AUTOVALORES: \n\n\n\n')
-            for i in M[1]:
-                for j in i:
-                    fora.write(str(j) +' ')
-                fora.write('\n')
-        with open('outpu_2.txt','w') as fora:
-            fora.write('MATRIZ DOS AUTOVETORES \n\n\n\n')
-            for i in M[2]:
-                for j in i:
-                    fora.write(str(j)+' ')
-                fora.write('\n')
+# else:
+M = Jacobi(M,N,tol)
+# if IDET == 1:
+print(M)
+D = DetermJacobi(M[1],N)
+with open('output_1.txt','w') as fora:      
+    fora.write('Determinante: ' + str(D) + '\n\n\n\n')
+    fora.write('MATRIZ DOS AUTOVALORES: \n\n\n\n')
+    for i in M[1]:
+        for j in i:
+            fora.write(str(j) +' ')
+        fora.write('\n')
+with open('outpu_2.txt','w') as fora:
+    fora.write('MATRIZ DOS AUTOVETORES \n\n\n\n')
+    for i in M[2]:
+        for j in i:
+            fora.write(str(j)+' ')
+        fora.write('\n')
             
-    else:
-        with open('output_1.txt','w') as fora:
+    # else:
+    #     with open('output_1.txt','w') as fora:
         
-            fora.write('MATRIZ DOS AUTOVALORES: \n\n\n\n')
-            for i in M[1]:
-                for j in i:
-                    fora.write(str(j) +' ')
-                fora.write('\n')
-        with open('outpu_2.txt','w') as fora:
-            fora.write('MATRIZ DOS AUTOVETORES \n\n\n\n')
-            for i in M[2]:
-                for j in i:
-                    fora.write(str(j)+' ')
-                fora.write('\n')
+    #         fora.write('MATRIZ DOS AUTOVALORES: \n\n\n\n')
+    #         for i in M[1]:
+    #             for j in i:
+    #                 fora.write(str(j) +' ')
+    #             fora.write('\n')
+    #     with open('outpu_2.txt','w') as fora:
+    #         fora.write('MATRIZ DOS AUTOVETORES \n\n\n\n')
+    #         for i in M[2]:
+    #             for j in i:
+    #                 fora.write(str(j)+' ')
+    #             fora.write('\n')
 
 
 

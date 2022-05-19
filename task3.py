@@ -19,11 +19,12 @@ def regressao(x, listapontos, paresN):
     for i in range(0, paresN):
         for j in range(0, 2):
             if j == 0:
-                # 1/e^x
-                matrizP[i].append(1/math.pow(math.e, listapontos[i][0]))
+                # e**(1/x)
+                print(listapontos[i][0])
+                matrizP[i].append(math.e**1/listapontos[i][0])
             else:
-                # ln(x)
-                matrizP[i].append(math.log(listapontos[i][0], math.e))
+                # sqrt(x)
+                matrizP[i].append(math.sqrt(listapontos[i][0]))
         matrizY.append(listapontos[i][1])
         if i < paresN - 1:
             matrizP.append(list())
@@ -43,28 +44,29 @@ def regressao(x, listapontos, paresN):
 
 def coordenadas(linhas, paresN):
     listapontos = [[]]
-
     for i in range(0, paresN):
-        for j in range(0, 3):
-            if j != 1:
-                listapontos[i].append(int(linhas[int(i)][int(j)]))  
+        for j in range(0, 2):
+            listapontos[i].append(float(linhas[int(i)][int(j)]))  
         if i < paresN - 1:
             listapontos.append(list())
 
     return listapontos
 
 
-with open('input_task3.txt') as file:
+with open('input_task3.txt') as file:  
     lines = file.readlines()
     lines = [line.rstrip() for line in lines]
 
 icod = int(lines[0])
 paresN = int(lines[1])
-x = int(lines[2])
+x = float(lines[2])
 
-with open('pontos_task3.dat') as file:
-    linhas = file.readlines()
-    linhas = [linha.rstrip() for linha in linhas]
+linhas=[]
+with open('pointsb.dat') as file:
+    for linha in file:
+        linhas.append(linha.split())
+    # linhas = file.readlines()
+    # linhas = [linha.strip() for linha in linhas]
 
 listapontos = coordenadas(linhas, paresN)
 
@@ -73,5 +75,5 @@ if icod == 1:
 elif icod == 2:
     saida = regressao(x, listapontos, paresN)
 
-with open('output_task3.txt', 'a') as the_file:
+with open('output_regressao.txt', 'a') as the_file:
     the_file.write('y = ' + saida)
