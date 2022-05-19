@@ -24,17 +24,16 @@ def Potencia(A,v,n):
             x0.append(i)
         
         
-        for i in range(n):
+        for i in range(n):#multiplicando matriz por vetor (Ax)
             s=0
             for j in range(n):
                 s+= A[i][j]*x0[j]
             
             v[i] = s
-        print(v)
-        print(x0)
-        L = v[0]
+       
+        L = v[0]#atribuindo proximo autovalor
         
-        for i in range(n):
+        for i in range(n):#fatorando X
             v[i]= v[i]/L
         if (abs(L - L0)/abs(L)) <= tol:
             k = False
@@ -152,7 +151,7 @@ def Jacobi(A,n,tol):
         ind = [0,1]
         
         
-        for i in range(n):
+        for i in range(n):  #procura maior valor absoluto fora da diag. principal
             for j in range(n):
                 
                 if (abs(A[i][j]) > c):
@@ -191,16 +190,6 @@ def Jacobi(A,n,tol):
                     a+= 1
                 
         if a == (n*(n-1)):
-            
-            for i in A:
-                print(i)
-            for i in x:
-                print(i)
-
-                
-            
-                
-            
             
             return [it, A, x]
         else:
@@ -302,5 +291,3 @@ else:
 
 
 
-
-  
