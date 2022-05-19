@@ -10,21 +10,35 @@ from math import cos
 
 
 def Potencia(A,v,n):
+    if len(v) == 0:
+        for i in range(n):
+            v.append(1.0)
+    
+    
     L0 = 1
     it = 1
-    while True:
+    k = True
+    while k:
+        x0 = []
+        for i in v:
+            x0.append(i)
+        
         
         for i in range(n):
             s=0
             for j in range(n):
-                s+= A[i][j]*v[j]
+                s+= A[i][j]*x0[j]
+            
             v[i] = s
-        
+        print(v)
+        print(x0)
         L = v[0]
+        
         for i in range(n):
-            v[i]= v[i]/v[0]
-        if ((abs(L - L0))/abs(L)) < tol:
-            return L, v, it
+            v[i]= v[i]/L
+        if (abs(L - L0)/abs(L)) <= tol:
+            k = False
+            return [L, v, it]
         else:
             L0 = L
             it+= 1
@@ -188,7 +202,7 @@ def Jacobi(A,n,tol):
                 
             
             
-            return it
+            return [it, A, x]
         else:
             it+= 1
 
@@ -208,99 +222,85 @@ def DetermJacobi(A,n):
 #-------------------------------------------------------------------
 
 M = []
-arq = open('Matriz.dat')
-for linha in arq:
-    a = []
-    for i in linha.split():
-        a.append(float(i))
-    M.append(a)
-arq.close()
+with open('mat.dat')as arq:
+    for linha in arq:
+        a = []
+        for i in linha.split():
+            a.append(float(i))
+        M.append(a)
 
-#pergunta ao usuário o que ele deseja
-                 
-k = True
-while k:
-    ICOD = input('insira ICOD')
-    if ICOD not in ['1','2']:
-        print('insira ICOD válido')
-    else:
-        ICOD = int(ICOD)
-        k = False
+v = []
 
-        
-k = True
-while k:
-    IDET = input('deseja calcular determinante? 0 se não, 1 se sim\n')
-    if IDET not in ['0','1']:
-        print('IDET inválido')
-    else:
-        IDET = int(IDET)
-        k=False
-
-
-
-
-if IDET == 1 and ICOD != 2:
-    print('comando inválido, impossivel proceder')
-    input('aperte qualquer tecla para fechar e abra novamente\n')
-    exit()
-
-
-#pergunta a ordem do sistema de equações
-
+with open('input.dat') as arq:
+    l=[]
+    for i in arq:
+        l.append(i)
+    N = int(l[0])
+    ICOD = int(l[1])
+    IDET = int(l[2])
+    tol = float(l[3])
     
-N = input('informe a ordem do sistema\n')
-N = int(N)
-
-#pergunta se o usuário quer usar uma tolerancia específica, ou a padrão(10^-3)
-
-k = True
-tol = 10**-3
-while k:
-
-    if ICOD == 2:
-        tol = input('deseja especificar tolerancia? padrão = 10^-3 - s/n\n')
-        if tol not in ['s','n']:
-            print('resposta inválida')
-        else:
-            tol = float(input('valor:\n'))
-            k = False
+    if l[4] == 's':
+        with open('chute.dat') as ch:
+            for i in ch:
+                v.append(float(i))
+    if IDET == 1 and ICOD != 2 or l[4] not in ['s','n']:
+        with open('output.txt','w') as out:
+            out.write('arquivo de input inválido. tente novamente')
+            input()
+            exit()
+#pergunta ao usuário o que ele deseja
 
 
-
-
-
-#pergunta se o usuário quer usar uma um vetor inicial específico, ou o padrão
-
-k = True
-
-x = []
-
-while k:
-    if ICOD == 2:
-        x = input('deseja informar vetor inicial? padrão é vetor unitário - s/n\n')
-        if x not in ['s','n']:
-            print('insira resposta válida\n')
-        else:
-            x_=[]
-            x = open('chute_inicial.dat')
-            for i in x:
-                x_.append(float(i))
-            x = x_
-            del x_
-                
-                
-            k = False
-
-
-if len(x)==0:
-    for i in range(N):
-        x.append(1)
         
 
 if ICOD == 1:
-    print(Potencia(M, x, N))
+    M = Potencia(M, v, N)
+    with open('output.txt','w') as fora:
+        fora.write('autovalor encontrado: ' + str(M[0]) + '\n\n\n')
+        fora.write('número de iterações: ' + str(M[2]) + '\n\n\n')
+        fora.write('auto vetor correspondente: \n\n\n')
+        for i in M[1]:
+            fora.write(str(i)+'\n')
+        
+        
+    
 
 else:
-    print(Jacobi(M, N, tol))
+    M = Jacobi(M,N,tol)
+    if IDET == 1:
+        
+        D = determJacobi(M[1],N)
+        with open('output_1.txt','w') as fora:
+            fora.write('Determinante: ' + str(D) + '\n\n\n\n')
+            fora.write('MATRIZ DOS AUTOVALORES: \n\n\n\n')
+            for i in M[1]:
+                for j in i:
+                    fora.write(str(j) +' ')
+                fora.write('\n')
+        with open('outpu_2.txt','w') as fora:
+            fora.write('MATRIZ DOS AUTOVETORES \n\n\n\n')
+            for i in M[2]:
+                for j in i:
+                    fora.write(str(j)+' ')
+                fora.write('\n')
+            
+    else:
+        with open('output_1.txt','w') as fora:
+        
+            fora.write('MATRIZ DOS AUTOVALORES: \n\n\n\n')
+            for i in M[1]:
+                for j in i:
+                    fora.write(str(j) +' ')
+                fora.write('\n')
+        with open('outpu_2.txt','w') as fora:
+            fora.write('MATRIZ DOS AUTOVETORES \n\n\n\n')
+            for i in M[2]:
+                for j in i:
+                    fora.write(str(j)+' ')
+                fora.write('\n')
 
+
+
+
+  

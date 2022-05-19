@@ -55,12 +55,12 @@ def sistLU(A,B,n):
 #calcula o determinante da matriz A decomposta em LU
 
 
-def determLU(A,n):
+def detLU(A,n):
 
     s = 0
     for i in range(n):
         
-        s+= A[i][i]
+        s = s + A[i][i]
     return s
 
 
@@ -133,7 +133,7 @@ def sistCholesky(A,B,n):
             
         B[i] = (B[i]-s)/A[i][i]
         i+=1
-    print(B)
+    
     B[n-1] = B[n-1]/A[n-1][n-1]
     i = n-2
     while i >= 0:
@@ -144,8 +144,17 @@ def sistCholesky(A,B,n):
             k-= 1
         B[i] = (B[i] - s) / A[i][i]
         i-=1
-    print(B)
+    
     return B
+
+#calcula o determinante da matriz A, de ordem n, decomposta por cholesky
+
+def detCholesky(A,n):
+    s = 0
+    for i in range(n):
+        s+= A[i][i]
+    return s**2
+
 '''
 B = [.6,-.3,-.6]
 sistCholesky(A, B, 3)
@@ -235,7 +244,7 @@ def Jacobi(A, B, n, x, tol):
         
         if (norma(x0)/norma(x)) <= tol:            
             
-            return it, x, historico
+            return [it, x, historico]
 
         else:
             it+=1
@@ -273,7 +282,8 @@ def GaussSeidel(A,B,n,x,tol):
                     j+=1
             if (s1 or s2) > A[i][i]:
                 
-                return 'A matriz A não é diagonal dominante. Insira uma matriz válida'
+                print('A matriz A não é diagonal dominante. Insira uma matriz válida')
+                return
             i+=1        
 
         
@@ -311,126 +321,140 @@ def GaussSeidel(A,B,n,x,tol):
         
         i = norma(x0)/norma(x)
         historico.append(round(i,3))
-        print(x, i, it)
+        
         
         if (i) <= tol:
             
-            return it, x, historico
+            return [it, x, historico]
         else:
             
             it+=1
             
             
 
-
-#coleta a matriz e salva na variavel M, e o vetor e o salva na variável V
-#precisam ser arquivos diferentes
-#a matriz deve ter suas linhas separadas pelas linhas do arquivo, e os elementos separados por espaço            
+           
 
 
 M = []
-arq = open('Matriz.dat')
-for linha in arq:
-    a = []
-    for i in linha.split():
-        a.append(float(i))
-    M.append(a)
-arq.close()
-V = []
-arq = open('vetor.dat')
-for i in arq.split():
-    V.append(float(i))
-arq.close()
-
-
-
-#pergunta ao usuário o que ele deseja
-                 
-k = True
-while k:
-    ICOD = input('insira ICOD')
-    if ICOD not in ['1','2','3','4']:
-        print('insira ICOD válido')
-    else:
-        ICOD = int(ICOD)
-        k = False
-
-        
-k = True
-while k:
-    IDET = input('deseja calcular determinante? 0 se não, 1 se sim\n')
-    if IDET not in ['0','1']:
-        print('IDET inválido')
-    else:
-        IDET = int(IDET)
-        k=False
-
-
-
-
-if IDET == 1 and ICOD != 1:
-    print('comando inválido, impossivel proceder')
-    input('aperte qualquer tecla para fechar e abra novamente\n')
-    exit()
-
-
-#pergunta a ordem do sistema de equações
-
+with open('mat.dat','r') as arq:
     
-N = input('informe a ordem do sistema\n')
-N = int(N)
+    for linha in arq:
+        a = []
+        for i in linha.split():
+            a.append(float(i))
+        M.append(a)
 
-#pergunta se o usuário quer usar uma tolerancia específica, ou a padrão(10^-3)
-
-k = True
-tol = 10**-3
-while k:
-
-    if ICOD == (3 or 4):
-        tol = input('deseja especificar tolerancia? padrão = 10^-3 - s/n\n')
-        if tol not in ['s','n']:
-            print('resposta inválida')
-        else:
-            tol = float(input('valor:\n'))
-            k = False
-
-
-
-
-
-#pergunta se o usuário quer usar uma um vetor inicial específico, ou o padrão
-
-k = True
 
 x = []
 
-while k:
-    if ICOD == (3 or 4):
-        x = input('deseja informar vetor inicial? padrão é vetor unitário - s/n\n')
-        if x not in ['s','n']:
-            print('insira resposta válida\n')
-        else:
-            x = open('chute_inicial.dat')
-            k = False
 
+with open('input.txt','r') as arquivo:
+    L = []
+    for i in arquivo:
+        L.append(i)
+    N = int(L[0])
+    ICOD = int(L[1])
+    IDET = int(L[2])
+    tol = float(L[3].split()[0])
+    if L[4] == 's':
+        
+        with open('chute.dat') as ch:
+            for i in ch:
+                x.append(float(i))
+
+
+        
+
+if (ICOD not in [1,2,3,4]) or (IDET not in [0,1]):
+    with open('output.txt','w') as out:
+        out.write('arquivo inválido. vise-o e tente novamente')
+        
+    input()
+    exit()
+
+
+if IDET == 1 and ICOD not in [1,2]:
+    with open('output.txt','w') as out:
+        out.write('não é possível calcular determinante. arrume o arquivo e tente novamente')
+        
+    input()
+    exit()
 
 #executa os métodos
         
 if ICOD == 1:
-    print(sistLU(M,V,N))
+    
     if IDET == 1:
-        print(determLU(M,N))
+        D = detLU(M,N)        
+        with open('output.txt','w') as out:
+            out.write('DETERMINANTE: '+ str(D) + '\n\n\n')
+            M = sistLU(M,V,N)
+            for elem in M:
+                out.write(str(elem)+'\n')
+    else:               
+        with open('output.txt','w') as out:
+
+            
+            M = sistLU(M,V,N)
+            for elem in M:
+                out.write(str(elem)+'\n')
+            
+    
+    
+
+        
 
 elif ICOD == 2:
-    print(sistCholesky(M,V,N))
 
-elif ICOD == 3:
-    print(Jacobi(M, V, N, x, tol))
+    if IDET == 1:
+        with open('DET.txt','w') as det:
+            det.write('DETERMINANTE:  '+str(D))
+        D = detCholesky(M,N)
+        M = sistCholesky(M,V,N)
+        with open('output.txt','w') as out:
+            for elem in M:
+                out.write(str(elem)+'\n')
+            
+        
+    else:
+            
+        M = sistCholesky(M,V,N)
+        with open('output.txt','w') as out:
+            for elem in M:
+                out.write(str(elem)+'\n')
+           
+    
+            
+elif ICOD == 3:#[it, x, historico]
+    
+    M = Jacobi(M, V, N, x, tol)
+
+    if type(M)==str:
+       with open('output.txt','w') as out:
+           out.write((M))
+    else:
+        with open('output.txt','w') as out:
+            for elem in M[1]:
+                out.write(str(elem)+'\n')
+            out.write('Nº de iterações: '+str(M[0]))
+            out.write('\nhistórico: '+str(M[2]))
 
 else:
-    print(GaussSeidel(M, V, N, x, tol))
+    M = GaussSeidel(M, V, N, x, tol)
+    if type(M)==str:
+       with open('output.txt','w') as out:
+           out.write((M))
+    else:
+        with open('output.txt','w') as out:
+            for elem in M[1]:
+                out.write(str(elem)+'n')
+            out.write('Nº de iterações: '+str(M[0]))
+            out.write('histórico: '+str(M[2]))
+    
 
 
 input()
 
 exit()
+    
+
