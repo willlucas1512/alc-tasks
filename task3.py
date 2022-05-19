@@ -10,8 +10,7 @@ def interpolacao(x, listapontos, paresN):
                phi *= (x - listapontos[j][0]) / (listapontos[i][0] - listapontos[j][0])
         y += phi * listapontos[i][1]
         phi = 1
-    print('y = ' + str(y))
-    return 0
+    return str(y)
 
 def regressao(x, listapontos, paresN):
     matrizP = [[]]
@@ -33,74 +32,39 @@ def regressao(x, listapontos, paresN):
     matrizB = np.dot(MatrizAinv, matrizC)
 
     y = (matrizB[0] / math.e ** x) + matrizB[1] * math.log(x, math.e)
-    print('y = ' + str(y))
-    return 0
+    return str(y)
 
-
-def pontox():
-    while True:
-        try:
-            x = float(input('Deseja calcular o y de qual ponto x? '))
-            break
-        except ValueError:
-                print('Favor inserir um numero (float).')
-    return x
-
-def coordenadas(paresN):
+def coordenadas(linhas, paresN):
     listapontos = [[]]
 
     for i in range(0, paresN):
-        for j in range(0, 2):
-            try:
-                if j == 0:
-                    listapontos[i].append(float(input(str(i + 1) + 'a Coordenada: x = ')))
-                else:
-                    listapontos[i].append(float(input(str(i + 1) + 'a Coordenada: y = ')))
-            except ValueError:
-                print("Insira um float.")
-                exit(0)
+        for j in range(0, 3):
+            if j != 1:
+                listapontos[i].append(int(linhas[int(i)][int(j)]))  
         if i < paresN - 1:
             listapontos.append(list())
-
-    print('Lista de Coordenadas:')
-    for i in range(len(listapontos)):
-        print(listapontos[i])
 
     return listapontos
 
 
-def paresN():
-    while True:
-        try:
-            var_paresN = int(input('Qual eh o numero de pares de pontos (x,y)? '))
-            if var_paresN < 1:
-                print('Favor inserir um numero inteiro positivo e nao nulo.')
-            else:
-                break
-        except ValueError:
-                print('Favor inserir um numero inteiro.')
-    return var_paresN
+with open('input_task3.txt') as file:
+    lines = file.readlines()
+    lines = [line.rstrip() for line in lines]
 
+icod = int(lines[0])
+paresN = int(lines[1])
+x = int(lines[2])
 
-def icod():
-    print('1 = Interpolacao\n2 = Regressao')
-    while True:
-        try:
-            var_icod = int(input('Qual metodo sera utilizado? '))
-            if var_icod != 1 and var_icod != 2:
-                print('Favor inserir um valor valido para o metodo.')
-            else:
-                break
-        except ValueError:
-            print('Favor inserir um valor valido para o metodo (1 ou 2)')
-    return var_icod
+with open('pontos_task3.dat') as file:
+    linhas = file.readlines()
+    linhas = [linha.rstrip() for linha in linhas]
 
-var_paresN = paresN()
-var_icod = icod()
-x = pontox()
-listapontos = coordenadas(var_paresN)
+listapontos = coordenadas(linhas, paresN)
 
-if var_icod == 1:
-    interpolacao(x, listapontos, var_paresN)
-elif var_icod == 2:
-    regressao(x, listapontos, var_paresN)
+if icod == 1:
+    saida = interpolacao(x, listapontos, paresN)
+elif icod == 2:
+    saida = regressao(x, listapontos, paresN)
+
+with open('output_task3.txt', 'a') as the_file:
+    the_file.write('y = ' + saida)
