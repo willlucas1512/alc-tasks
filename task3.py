@@ -13,24 +13,31 @@ def interpolacao(x, listapontos, paresN):
     return str(y)
 
 def regressao(x, listapontos, paresN):
+    # matriz dos regressores
     matrizP = [[]]
     matrizY = []
     for i in range(0, paresN):
         for j in range(0, 2):
             if j == 0:
+                # 1/e^x
                 matrizP[i].append(1/math.pow(math.e, listapontos[i][0]))
             else:
+                # ln(x)
                 matrizP[i].append(math.log(listapontos[i][0], math.e))
         matrizY.append(listapontos[i][1])
-
         if i < paresN - 1:
             matrizP.append(list())
+    # matriz P transposta        
     matrizPt = np.transpose(matrizP)
+    # A = Pt * P
     matrizA = np.dot(matrizPt, matrizP)
+    # C = Pt * Y
     matrizC = np.dot(matrizPt, matrizY)
+    # A inversa
     MatrizAinv = np.linalg.inv(matrizA)
+    # B = A inversa * C
     matrizB = np.dot(MatrizAinv, matrizC)
-
+    # y = b1 * 1/e^x + b2 * ln(x)
     y = (matrizB[0] / math.e ** x) + matrizB[1] * math.log(x, math.e)
     return str(y)
 
